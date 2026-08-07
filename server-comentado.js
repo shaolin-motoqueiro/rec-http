@@ -40,10 +40,19 @@ app.get('/livros', (req, res) => {
 // Busca UM livro pelo id na URL.
 // Exemplo: GET /livros/2 → req.params.id vale "2" (string).
 app.get('/livros/:id', (req, res) => {
-    // :id na rota vira req.params.id.
-    // parseInt converte a string "2" para o número 2, porque no array o id é number.
-    // .find() percorre o array e devolve o primeiro item que satisfaz a condição (ou undefined).
-    const livro = livros.find(livro => livro.id === parseInt(req.params.id));
+    // 1) Pega o id da URL. :id na rota vira req.params.id (sempre string).
+    const idDaUrl = req.params.id;
+
+    // 2) Converte a string "2" para o número 2, porque no array o id é number.
+    //    Sem isso, "2" === 2 seria false (tipos diferentes).
+    const id = Number(idDaUrl);
+
+    // 3) .find() percorre o array e devolve o primeiro item que satisfaz a condição
+    //    (ou undefined se nenhum bater).
+    const livro = livros.find(function (livro) {
+        return livro.id === id;
+    });
+
     // Devolve o livro encontrado em JSON.
     // Se não existir, devolve undefined (na prática, resposta vazia/estranha; ideal seria 404).
     res.json(livro);
@@ -73,16 +82,25 @@ app.post('/livros', (req, res) => {
 
 
 // ---------- ROTA DELETE /livros/:id ----------
-// Remove um livro pelo id da URL.
+// Remove um livro pelo id na URL.
 // Exemplo: DELETE /livros/2
 app.delete('/livros/:id', (req, res) => {
-    // .filter() cria um NOVO array só com os livros cujo id NÃO é o id da URL.
-    // Assim o livro com aquele id é "removido".
-    // Reatribuímos em "livros" porque usamos let.
-    livros = livros.filter(livro => livro.id !== parseInt(req.params.id));
+    // 1) Pega o id da URL (sempre string).
+    const idDaUrl = req.params.id;
+
+    // 2) Converte para número, igual na rota GET /livros/:id.
+    const id = Number(idDaUrl);
+
+    // 3) .filter() cria um NOVO array só com os livros cujo id NÃO é o id da URL.
+    //    Assim o livro com aquele id é "removido".
+    //    Reatribuímos em "livros" porque usamos let.
+    livros = livros.filter(function (livro) {
+        return livro.id !== id;
+    });
+
     // status(204) = No Content (sucesso, mas sem corpo de resposta é o padrão HTTP).
     // Aqui ainda enviamos uma mensagem com .send() — funciona, mas o mais "correto" seria só 204 sem body.
-    res.status(204).send(`livro ${req.params.id} deletado com sucesso `);
+    res.status(204).send(`livro ${id} deletado com sucesso`);
 });
 
 // ---------- INICIAR O SERVIDOR ----------

@@ -15,7 +15,11 @@ app.get('/livros', (req, res) => {
 });
 
 app.get('/livros/:id', (req, res) => {
-    const livro = livros.find(livro => livro.id === parseInt(req.params.id));
+    const idDaUrl = req.params.id;
+    const id = Number(idDaUrl);
+    const livro = livros.find(function (livro) {
+        return livro.id === id;
+    });
     res.json(livro);
 });
 
@@ -34,8 +38,12 @@ app.post('/livros', (req, res) => {
 
 
 app.delete('/livros/:id', (req, res) => {
-    livros = livros.filter(livro => livro.id !== parseInt(req.params.id));
-    res.status(204).send(`livro ${req.params.id} deletado com sucesso `);
+    const idDaUrl = req.params.id;
+    const id = Number(idDaUrl);
+    livros = livros.filter(function (livro) {
+        return livro.id !== id;
+    });
+    res.status(204).send(`livro ${id} deletado com sucesso`);
 });
 
 app.listen(3000, () => {
