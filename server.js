@@ -1,4 +1,4 @@
-import express from 'express';
+  import express from 'express';
 
 const app = express();
 
@@ -17,7 +17,7 @@ app.get('/livros', (req, res) => {
 app.get('/livros/:id', (req, res) => {
     const idDaUrl = req.params.id;
     const id = Number(idDaUrl);
-    const livro = livros.find(function (livro) {
+    const livro = livros.find((livro) => {
         return livro.id === id;
     });
     res.json(livro);
@@ -37,13 +37,29 @@ app.post('/livros', (req, res) => {
 });
 
 
+app.put('/livros/:id', (req, res) => {
+    const idDaUrl = req.params.id;
+    const id = Number(idDaUrl);
+    const index = livros.findIndex((livro) => {
+        return livro.id === id;
+    });
+    livros[index] = {
+        id: id,
+        nome: req.body.nome,
+        autor: req.body.autor
+    };
+    res.status(200).send(`livro ${id} atualizado com sucesso`);
+});
+
+
+
 app.delete('/livros/:id', (req, res) => {
     const idDaUrl = req.params.id;
     const id = Number(idDaUrl);
-    livros = livros.filter(function (livro) {
+    livros = livros.filter((livro) => {
         return livro.id !== id;
     });
-    res.status(204).send(`livro ${id} deletado com sucesso`);
+    res.status(200).send(`livro ${id} deletado com sucesso`);
 });
 
 app.listen(3000, () => {

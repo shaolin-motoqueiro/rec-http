@@ -81,6 +81,49 @@ app.post('/livros', (req, res) => {
 });
 
 
+// ---------- ROTA PUT /livros/:id ----------
+// Atualiza um livro existente pelo id na URL.
+// Exemplo: PUT /livros/2 com body { "nome": "novo nome", "autor": "novo autor" }
+app.put('/livros/:id', (req, res) => {
+    const idDaUrl = req.params.id;
+    const id = Number(idDaUrl);
+
+    const index = livros.findIndex((livro) => {
+        return livro.id === id;
+    });
+
+    livros[index] = {
+        id: id,
+        nome: req.body.nome,
+        autor: req.body.autor
+    };
+
+    res.status(200).send(`livro ${id} atualizado com sucesso`);
+});
+
+
+// ---------- ROTA PATCH /livros/:id ----------
+// Atualiza PARCIALMENTE um livro — só os campos enviados no body são alterados.
+// Exemplo: PATCH /livros/2 com body { "nome": "só o nome mudou" } → autor permanece igual.
+app.patch('/livros/:id', (req, res) => {
+    const idDaUrl = req.params.id;
+    const id = Number(idDaUrl);
+
+    const index = livros.findIndex((livro) => {
+        return livro.id === id;
+    });
+
+    if (req.body.nome !== undefined) {
+        livros[index].nome = req.body.nome;
+    }
+    if (req.body.autor !== undefined) {
+        livros[index].autor = req.body.autor;
+    }
+
+    res.status(200).send(`livro ${id} atualizado parcialmente com sucesso`);
+});
+
+
 // ---------- ROTA DELETE /livros/:id ----------
 // Remove um livro pelo id na URL.
 // Exemplo: DELETE /livros/2
@@ -94,13 +137,13 @@ app.delete('/livros/:id', (req, res) => {
     // 3) .filter() cria um NOVO array só com os livros cujo id NÃO é o id da URL.
     //    Assim o livro com aquele id é "removido".
     //    Reatribuímos em "livros" porque usamos let.
-    livros = livros.filter(function (livro) {
+    livros = livros.filter((livro) => {
         return livro.id !== id;
     });
 
-    // status(204) = No Content (sucesso, mas sem corpo de resposta é o padrão HTTP).
-    // Aqui ainda enviamos uma mensagem com .send() — funciona, mas o mais "correto" seria só 204 sem body.
-    res.status(204).send(`livro ${id} deletado com sucesso`);
+    // status(200) = OK, com mensagem no body.
+    // Não use 204 aqui: 204 = No Content, e a mensagem sumiria no cliente.
+    res.status(200).send(`livro ${id} deletado com sucesso`);
 });
 
 // ---------- INICIAR O SERVIDOR ----------
