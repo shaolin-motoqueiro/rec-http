@@ -49,7 +49,7 @@ app.get('/livros/:id', (req, res) => {
 
     // 3) .find() percorre o array e devolve o primeiro item que satisfaz a condição
     //    (ou undefined se nenhum bater).
-    const livro = livros.find(function (livro) {
+    const livro = livros.find((livro) => {
         return livro.id === id;
     });
 
@@ -82,16 +82,18 @@ app.post('/livros', (req, res) => {
 
 
 // ---------- ROTA PUT /livros/:id ----------
-// Atualiza um livro existente pelo id na URL.
+// Atualiza um livro existente pelo id na URL (substitui nome e autor inteiros).
 // Exemplo: PUT /livros/2 com body { "nome": "novo nome", "autor": "novo autor" }
 app.put('/livros/:id', (req, res) => {
     const idDaUrl = req.params.id;
     const id = Number(idDaUrl);
 
+    // .findIndex() devolve a posição do livro no array (ou -1 se não existir).
     const index = livros.findIndex((livro) => {
         return livro.id === id;
     });
 
+    // Substitui o objeto na posição encontrada pelos novos dados do body.
     livros[index] = {
         id: id,
         nome: req.body.nome,
@@ -99,28 +101,6 @@ app.put('/livros/:id', (req, res) => {
     };
 
     res.status(200).send(`livro ${id} atualizado com sucesso`);
-});
-
-
-// ---------- ROTA PATCH /livros/:id ----------
-// Atualiza PARCIALMENTE um livro — só os campos enviados no body são alterados.
-// Exemplo: PATCH /livros/2 com body { "nome": "só o nome mudou" } → autor permanece igual.
-app.patch('/livros/:id', (req, res) => {
-    const idDaUrl = req.params.id;
-    const id = Number(idDaUrl);
-
-    const index = livros.findIndex((livro) => {
-        return livro.id === id;
-    });
-
-    if (req.body.nome !== undefined) {
-        livros[index].nome = req.body.nome;
-    }
-    if (req.body.autor !== undefined) {
-        livros[index].autor = req.body.autor;
-    }
-
-    res.status(200).send(`livro ${id} atualizado parcialmente com sucesso`);
 });
 
 
