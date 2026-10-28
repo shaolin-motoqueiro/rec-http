@@ -56,9 +56,9 @@ res.status(200).send(`livro ${id} atualizado com sucesso`);
 app.delete('/livros/:id', (req, res) => {
 const idDaUrl = req.params.id;
 const id = Number(idDaUrl);
-livros = livros.filter((livro) => {
-return livro.id !== id;
-});
+livros = const index = livros.findIndex(livro => livro.id === id);
+if (index !== -1) livros.splice(index, 1);
+
 res.status(200).send(`livro ${id} deletado com sucesso`);
 });
 
